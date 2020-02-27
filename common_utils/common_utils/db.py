@@ -1,5 +1,4 @@
 import random
-from functools import partial
 from glob import glob
 from multiprocessing.pool import ThreadPool
 
@@ -9,6 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, BigInteger, Float, DateTime
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
+import numpy as np
 
 Base = declarative_base()
 
@@ -149,29 +149,21 @@ class HardDriveStatus(Base):
 
 
 
-def _upload_single_record(record, session_cls):
-    session = session_cls()
-    hours = random.randint(0, 23)
-    minutes = random.randint(0, 59)
-    seconds = random.randint(0, 59)
-    record['date'] = record['date'] + pd.Timedelta(hours=hours, minutes=minutes, seconds=seconds)
-    db_record = HardDriveStatus(**record)
-    session.add(db_record)
-    session.commit()
-    session.close()
-
-
 def upload_csv(all_files_path, engine: Engine):
     Base.metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
+    session = Session()
     for file_path in glob(all_files_path):
-        print('uploading {}'.format(file_path))
         data = pd.read_csv(file_path)
         data['date'] = pd.to_datetime(data.date)
-        all_data = data.to_dict(orient='record')
-        with ThreadPool(20) as pool:
-            _ = list(tqdm.tqdm(pool.imap(
-                partial(_upload_single_record, session_cls=Session),
-                all_data
-            ), total=len(all_data)))
+        seconds = pd.Series(np.random.randint(0, 86399, size=data['date'].shape))
+        seconds = seconds.map(lambda x: pd.Timedelta(seconds=x))
+        data['date'] = data['date'] + seconds
+        with ThreadPool(10) as pool:
+            for i, record in enumerate(tqdm.tqdm(data.to_dict(orient='record'))):
+                db_record = HardDriveStatus(**record)
+
+                session.add(db_record)
+                if not i % 1000:
+                    session.commit()

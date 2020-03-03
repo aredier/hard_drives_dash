@@ -1,4 +1,5 @@
 import random
+from functools import partial
 from glob import glob
 from multiprocessing.pool import ThreadPool
 
@@ -148,22 +149,23 @@ class HardDriveStatus(Base):
     smart_255_raw = Column(Float)
 
 
+def _upload_record(record, session_cls):
+    session = session_cls()
+    db_record = HardDriveStatus(**record)
+    session.add(db_record)
+    session.commit()
 
 def upload_csv(all_files_path, engine: Engine):
     Base.metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
-    session = Session()
     for file_path in glob(all_files_path):
+        print('doing {}'.format(file_path))
         data = pd.read_csv(file_path)
         data['date'] = pd.to_datetime(data.date)
         seconds = pd.Series(np.random.randint(0, 86399, size=data['date'].shape))
         seconds = seconds.map(lambda x: pd.Timedelta(seconds=x))
         data['date'] = data['date'] + seconds
-        with ThreadPool(10) as pool:
-            for i, record in enumerate(tqdm.tqdm(data.to_dict(orient='record'))):
-                db_record = HardDriveStatus(**record)
-
-                session.add(db_record)
-                if not i % 1000:
-                    session.commit()
+        list_data = data.to_dict(orient='record')
+        with ThreadPool(50) as pool:
+            _ = list(tqdm.tqdm(pool.imap(partial(_upload_record, session_cls=Session), list_data), total=len(list_data)))

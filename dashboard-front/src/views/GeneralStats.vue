@@ -3,7 +3,7 @@
         <v-container fluid >
             <v-row dense>
                 <v-col cols="12">
-                    <MainCard title="Failure evolution" icon="mdi-chart-timeline-variant">
+                    <MainCard title="Failure Evolution" icon="mdi-chart-timeline-variant">
                         <FailureHistory height="100"/>
                     </MainCard>
                 </v-col>

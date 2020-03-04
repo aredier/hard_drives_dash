@@ -114,7 +114,7 @@
                     {
                         name: 'recall score',
                         value: '20.3%',
-                        descritption: 'The recll score is the proportion of failures that were detected in advances by our model',
+                        descritption: 'The recall score is the proportion of failures that were detected in advances by our model',
                     },
                     {
                         name: 'roc auc score',

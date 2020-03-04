@@ -37,9 +37,7 @@
                 this.$emit('closeNotification')
             },
             click () {
-                console.log('bar')
                 if (this.clickable) {
-                    console.log('got to notiication')
                     this.$emit('click')
                 }
             }

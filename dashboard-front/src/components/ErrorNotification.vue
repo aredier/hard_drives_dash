@@ -34,7 +34,6 @@
             },
             click () {
                 if (this.clickable) {
-                    console.log('got to notiication')
                     this.$emit('click')
                 }
             }

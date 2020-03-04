@@ -5,10 +5,10 @@
                 {{icon}}
             </v-icon>
         </v-col>
-        <v-col :style='"font-size: " + this.textSize + ";"'>
+        <v-col :style='"font-size: " + this.textSize + ";"' cols="9">
             <slot></slot>
         </v-col>
-        <v-col cols="1">
+        <v-col cols="2">
             <v-btn icon @click="closeNotification()">
                 <v-icon>
                     mdi-close-circle
@@ -45,7 +45,6 @@
                 );
             },
             click () {
-                console.log('got to root notiication')
                 this.$emit('click')
             }
         },

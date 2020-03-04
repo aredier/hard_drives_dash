@@ -158,7 +158,6 @@ export default new Vuex.Store({
       context.commit('fetchGroupedData');
     },
     updateModelPerformances (context) {
-      console.log('foo');
       context.commit('resetModelPerformance');
       context.commit('fetchUpdateModelPerformance');
     },

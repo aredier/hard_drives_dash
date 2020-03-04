@@ -49,13 +49,22 @@
                     max-width="550"
                     :close-on-content-click="false">
                 <template v-slot:activator="{ on }">
-                    <v-btn
-                            dark
-                            v-on="on"
-                            icon
+                    <v-badge
+                            :value="notificationDot"
+                            color="error"
+                            overlap
+                            dot
+                            offset-x="15"
+                            offset-y="15"
                     >
-                        <v-icon>mdi-bell</v-icon>
-                    </v-btn>
+                        <v-btn
+                                dark
+                                v-on="on"
+                                icon
+                        >
+                            <v-icon>mdi-bell</v-icon>
+                        </v-btn>
+                    </v-badge>
                 </template>
                 <v-card
                         style="margin-top: 5px; background: #616161"
@@ -92,6 +101,7 @@
         data: () => ({
             dialog: false,
             notificationMenu: false,
+            notificationDot: true,
             drawer: null,
             items: [
                 {
@@ -114,6 +124,13 @@
         computed: {
             notifications () {
                 return this.$store.state.notifications
+            }
+        },
+        watch: {
+            notificationMenu (value) {
+                if (!value) {
+                    this.notificationDot = false;
+                }
             }
         },
         created () {

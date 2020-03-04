@@ -50,6 +50,8 @@ docs/_build/*
 # front
 dashboard-front/node_modules
 dashboard-front/dist
+dashboard-back/dist
+node_modules
 
 # local env files
 .env.local

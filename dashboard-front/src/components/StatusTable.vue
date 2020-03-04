@@ -134,6 +134,17 @@
         </v-data-iterator>
         <input type="text" value="foo" id="clipboard"
                style="opacity: 0.1; height:0;position:absolute;z-index: -1;">
+        <v-snackbar
+                v-model="snackbar"
+        >
+            {{snackContent}} copied to clipboard
+            <v-btn
+                    text
+                    @click="snackbar = false"
+            >
+                Close
+            </v-btn>
+        </v-snackbar>
     </v-container>
 </template>
 <script>
@@ -150,6 +161,8 @@
                 filter: {},
                 page: 1,
                 itemsPerPage: 5,
+                snackbar: false,
+                snackContent: "",
                 keys: [
                     'date',
                     'serial_number',
@@ -208,6 +221,8 @@
 
                 /* Copy the text inside the text field */
                 document.execCommand("copy");
+                this.snackContent = text;
+                this.snackbar = true;
             },
         },
     }

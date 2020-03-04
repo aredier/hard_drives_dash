@@ -64,7 +64,6 @@
                 this.$store.dispatch("popNotification", (notification))
             },
             goToInDepth (serialNumber) {
-                console.log('got to pool')
                 router.push('/in-depth-analysis/' + serialNumber)
             },
         }

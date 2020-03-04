@@ -25,7 +25,6 @@
         },
         methods: {
             click () {
-                console.log('got to chip ')
                 this.$emit('click')
             }
         }

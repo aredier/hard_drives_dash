@@ -1,5 +1,10 @@
 <template>
-    <MainCard :title="title" icon="mdi-table-large">
+    <MainCard
+            :title="title"
+            icon="mdi-table-large"
+            :isLoading="isLoading"
+            :loadingColor="loadingColor"
+            :tooltip="tooltip">
         <template v-slot:header>
             <span class="grey--text" v-if="hasNumberMenu">Items to display</span>
             <v-menu offset-y v-if="hasNumberMenu">
@@ -89,6 +94,18 @@
             title: {
                 type: String,
                 required: true
+            },
+            isLoading: {
+                type: Boolean,
+                default: false
+            },
+            loadingColor:{
+                type: String,
+                default: '#80DEEA',
+            },
+            tooltip:{
+                type: String,
+                default: ''
             }
         },
         computed: {

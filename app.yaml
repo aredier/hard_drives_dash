@@ -1,5 +1,5 @@
 runtime: python37
-entrypoint: cd dashboard-back && gunicorn --log-level DEBUG -b :$PORT main:app
+entrypoint: cd dashboard_back && gunicorn --log-level DEBUG -b :$PORT main:app
 
 #handlers:
 #  # This configures Google App Engine to serve the files in the app's static

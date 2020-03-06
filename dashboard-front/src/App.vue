@@ -7,24 +7,45 @@
                 :clipped="$vuetify.breakpoint.lgAndUp"
                 style="background: #424242"
                 app
+                temporary
         >
             <v-list dense>
-                <template v-for="item in items">
-                    <v-list-item
-                            :key="item.text"
-                            link
-                            @click="pushRoute(item.route)"
-                    >
-                        <v-list-item-action>
-                            <v-icon>{{ item.icon }}</v-icon>
-                        </v-list-item-action>
+                <v-list-item link @click="pushRoute('/')">
+                    <v-list-item-action>
+                        <v-icon>mdi-table-large</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Overview</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item link @click="pushRoute('/in-depth-analysis')">
+                    <v-list-item-action>
+                        <v-icon>mdi-chart-line</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>In Depth Analysis</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-group
+                        prepend-icon="mdi-speedometer"
+                        color="white"
+                        no-action
+                >
+                    <template v-slot:activator>
+                        <v-list-item-title>Model Performance</v-list-item-title>
+                    </template>
+                    <v-list-item link @click="pushRoute('/live-performance')">
                         <v-list-item-content>
-                            <v-list-item-title>
-                                {{ item.text }}
-                            </v-list-item-title>
+                            <v-list-item-title>Live Performance</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
-                </template>
+                    <v-list-item link @click="pushRoute('/test-performance')">
+                        <v-list-item-content>
+                            <v-list-item-title>Test Performance</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list-group>
+
             </v-list>
         </v-navigation-drawer>
 
@@ -103,23 +124,6 @@
             notificationMenu: false,
             notificationDot: true,
             drawer: null,
-            items: [
-                {
-                    icon: 'mdi-table-large',
-                    text: 'Overview',
-                    route: '/',
-                },
-                {
-                    icon: 'mdi-chart-line',
-                    text: 'In depth analysis',
-                    route: '/in-depth-analysis',
-                },
-                {
-                    icon: 'mdi-speedometer',
-                    text: 'model performance',
-                    route: '/model-performance',
-                },
-            ],
         }),
         computed: {
             notifications () {
@@ -142,7 +146,10 @@
             this.$store.dispatch('updateStatuses', 1000);
             this.$store.dispatch('applyFilters', {
                 probaRange: [0, 1],
-                selectedModels: []
+                selectedModels: [],
+                selectFailures: true,
+                selectWarnings: true,
+                selectNominal: true,
             });
             this.$store.dispatch('updateModelPerformances')
         }

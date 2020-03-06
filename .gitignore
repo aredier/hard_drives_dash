@@ -9,6 +9,7 @@ Cargo.lock
 **/__pycache__/
 .python-version
 **/.egg-info/
+**/*.egg-info/
 **/.tox/
 **/.eggs/
 .pytest_cache/
@@ -50,7 +51,7 @@ docs/_build/*
 # front
 dashboard-front/node_modules
 dashboard-front/dist
-dashboard-back/dist
+dashboard_back/dist
 node_modules
 
 # local env files
@@ -73,4 +74,8 @@ dashboard-front/yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# credentials
+
+credentials.json
 

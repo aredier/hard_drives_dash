@@ -34,6 +34,7 @@ export default {
                             ticks: {
                                 display: true,
                                 fontColor: "white",
+                                min: 0,
                             },
                             gridLines: {
                                 display: true,

@@ -7,6 +7,9 @@
                             :title="notificationTitle"
                             icon="mdi-bell"
                             style="height: 400px;"
+                            :isLoading="targetSerialLoading"
+                            loadingColor="#FF8A65"
+                            tooltip="Past notifications concerning this hard drive"
                     >
                         <NotificationPool :notifications="filterdNotifications"/>
                     </MainCard>
@@ -16,6 +19,9 @@
                             title="Past Prediction"
                             icon="mdi-chart-timeline-variant"
                             style="height: 400px;"
+                            :isLoading="targetSerialLoading"
+                            loadingColor="#FF8A65"
+                            tooltip="Past failure predictions. For each day the probability of failure for the next day is outputed."
                     >
                         <template>
                             <div style="position: relative; height: 340px;">
@@ -27,14 +33,22 @@
             </v-row>
             <v-row dense>
                 <v-col cols="12">
-                    <StatusCard :title="fullDataTitle" :items="fullDataItems"></StatusCard>
+                    <StatusCard
+                            :title="fullDataTitle"
+                            :items="fullDataItems"
+                            :isLoading="targetSerialLoading"
+                            loadingColor="#FF8A65"
+                    />
                 </v-col>
             </v-row>
         </v-container>
         <v-container fluid v-else>
             <v-row>
                 <v-col>
-                    <MainCard title="Disk Choice" icon="mdi-magnify">
+                    <MainCard
+                            title="Disk Choice" icon="mdi-magnify"
+                            :loading="targetSerialLoading"
+                    >
                         <v-container>
                             <v-row>
                                 <v-card-subtitle>
@@ -91,6 +105,7 @@
     import StatusCard from "@/components/StatusCard";
     import utils from '@/utils';
     import NotificationPool from "@/components/NotificationPool";
+    import {mapState} from "vuex";
 
     export default {
         name: 'Home',
@@ -107,6 +122,7 @@
             }
         },
         computed: {
+            ...mapState(['targetSerialLoading']),
             notificationTitle() {
                 return this.$route.params.serial + "'s Notifications"
             },
@@ -114,9 +130,7 @@
                 return this.$route.params.serial + "'s Full Data"
             },
             fullDataItems() {
-                var res = this.$store.state.hard_drive_statuses.filter((item) => {
-                    return item.serial_number == this.$route.params.serial
-                }).map((item) => {
+                var res = this.$store.state.targetSerialStatuses.map((item) => {
                     item['capacity_bytes'] = utils.humanFileSize(item['capacity_bytes'])
                     return item
                 });
@@ -127,24 +141,35 @@
                 return this.$store.state.notifications.filter((item) => item.serial == this.$route.params.serial)
             },
             isEmpty () {
-                return this.$route.params.serial == undefined || this.fullDataItems.length == 0
+                return !this.targetSerialLoading && ( this.$route.params.serial == undefined || this.fullDataItems.length == 0)
             }
         },
         methods: {
             search (){
                 router.push('/in-depth-analysis/' + this.searchSerial)
             },
+            getStatuses (){
+                this.$store.commit('getTargetSerialStatuses', this.$route.params.serial)
+                this.evaluateSnackbar()
+            },
             evaluateSnackbar () {
-                this.snackbar = this.$route.params.serial != undefined && this.fullDataItems.length == 0
+                if (!this.targetSerialLoading) {
+                    this.snackbar = this.$route.params.serial != undefined && this.fullDataItems.length == 0
+                }
             }
         },
         watch: {
             $route () {
-                this.evaluateSnackbar()
+               this.getStatuses()
+            },
+            targetSerialLoading (value) {
+                if (!value) {
+                    this.evaluateSnackbar()
+                }
             }
         },
         mounted() {
-            this.evaluateSnackbar()
+            this.getStatuses()
         }
     }
 </script>

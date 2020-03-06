@@ -60,6 +60,18 @@
                         ></v-range-slider>
                     </v-col>
                 </v-row>
+                <v-row align="center" justify="center">
+                    <v-subheader style="margin-bottom: 15px;">Hard Drive Status: </v-subheader>
+                <v-col cols="2">
+                        <v-switch v-model="selectFailures" class="ma-2" label="Failure" color="#80DEEA"></v-switch>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-switch v-model="selectWarnings" class="ma-2" label="Warning" color="#80DEEA"></v-switch>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-switch v-model="selectNominal" class="ma-2" label="Nominal" color="#80DEEA"></v-switch>
+                    </v-col>
+                </v-row>
             </v-container>
             <v-card-actions>
                 <v-spacer />
@@ -83,7 +95,11 @@
             return {
                 models: this.$store.state.allModels.map((item) => {return {name: item}}),
                 selectedModels: [],
-                slider: [0, 1]
+                slider: [0, 1],
+                selectNominalselectFailures: true,
+                selectFailures: true,
+                selectWarnings: true,
+                selectNominal: true,
             }
         },
         props: {
@@ -94,7 +110,10 @@
                 if (applyFilters) {
                     this.$store.dispatch('applyFilters', {
                         probaRange: this.slider,
-                        selectedModels: this.selectedModels
+                        selectedModels: this.selectedModels,
+                        selectWarnings: this.selectWarnings,
+                        selectFailures: this.selectFailures,
+                        selectNominal: this.selectNominal,
                     });
                 }
                 this.$emit('input', false)

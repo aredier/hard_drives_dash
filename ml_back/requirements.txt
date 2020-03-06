@@ -1,0 +1,9 @@
+-e git://github.com/aredier/chariots.git#egg=chariots
+structlog==20.1.0
+google-cloud-storage==1.26.0
+dask[dataframe]==2.10.1
+pandas==1.0.1
+numpy==1.18.1
+scikit-learn==0.22.1
+lightgbm==2.3.1
+rq==1.2.2

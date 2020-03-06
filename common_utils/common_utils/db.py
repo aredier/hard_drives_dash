@@ -1,3 +1,4 @@
+import os
 import random
 from functools import partial
 from glob import glob
@@ -167,5 +168,10 @@ def upload_csv(all_files_path, engine: Engine):
         seconds = seconds.map(lambda x: pd.Timedelta(seconds=x))
         data['date'] = data['date'] + seconds
         list_data = data.to_dict(orient='record')
-        with ThreadPool(50) as pool:
-            _ = list(tqdm.tqdm(pool.imap(partial(_upload_record, session_cls=Session), list_data), total=len(list_data)))
+        if os.environ.get('CHARIOTS_LOCAL') == 'true':
+            print('running local')
+            for record in tqdm.tqdm(list_data):
+               _upload_record(record, Session)
+        else:
+            with ThreadPool(50) as pool:
+                _ = list(tqdm.tqdm(pool.imap(partial(_upload_record, session_cls=Session), list_data), total=len(list_data)))

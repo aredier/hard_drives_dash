@@ -8,12 +8,20 @@
                 <v-card style="background-color: #212121" elevation="10">
                     <v-container fluid>
                         <v-row>
-                            <v-col cols="1" style="text-align: center; font-weight: bold;">status</v-col>
-                            <v-col cols="2" style="text-align: center; font-weight: bold;">date-time</v-col>
-                            <v-col cols="2" style="text-align: center; font-weight: bold;">serial number</v-col>
-                            <v-col cols="2" style="text-align: center; font-weight: bold;">model</v-col>
-                            <v-col cols="2" style="text-align: center; font-weight: bold;">capacity</v-col>
-                            <v-col cols="2" style="text-align: center; font-weight: bold;">failure probability</v-col>
+                            <v-col cols="1" style="text-align: center; font-weight: bold;">
+                                <span>Last Status</span>
+                                <Tooltip
+                                    value="Reported status of the hard drive at this date. This can either be nominal, a warning when the drive is predicted to fail in the near future, or critical if the drive failed"/>
+                            </v-col>
+                            <v-col cols="2" style="text-align: center; font-weight: bold;">Update Date Time</v-col>
+                            <v-col cols="2" style="text-align: center; font-weight: bold;">Serial Number</v-col>
+                            <v-col cols="2" style="text-align: center; font-weight: bold;">Model</v-col>
+                            <v-col cols="2" style="text-align: center; font-weight: bold;">Capacity</v-col>
+                            <v-col cols="2" style="text-align: center; font-weight: bold;">
+                                <span>Failure Probability</span>
+                                <Tooltip
+                                        value="Probability of the drive failing in the near future as predicted by our model"/>
+                            </v-col>
                             <v-col cols="1" style="text-align: center;"></v-col>
                         </v-row>
                     </v-container>
@@ -150,10 +158,12 @@
 <script>
     import router from "@/router";
     import ChipRow from "@/components/ChipRow";
+    import Tooltip from "@/components/Tooltip";
 
     export default {
         components: {
-            ChipRow
+            ChipRow,
+            Tooltip
         },
         data () {
             return {

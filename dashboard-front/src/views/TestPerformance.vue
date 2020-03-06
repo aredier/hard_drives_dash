@@ -3,50 +3,21 @@
         <v-container fluid>
             <v-row dense>
                 <v-col cols="12">
-                    <MainCard title="Live Performances" icon="mdi-fast-forward">
-                       <v-container fluid>
-                           <v-row align="stretch" justify="center">
-                               <v-col cols="4">
-                                   <MainCard title="Performance Evolution" icon="mdi-chart-timeline-variant">
-                                       <PerformanceGraph :inputData="livePerformanceData" height="375"></PerformanceGraph>
-                                   </MainCard>
-                               </v-col>
-                               <v-col cols="4">
-                                   <MainCard style="height: 100%" title="Confusion Matrix" icon="mdi-table">
-                                       <ConfusionMatrix :confusionMatrix="liveConfusionMatrix"></ConfusionMatrix>
-                                   </MainCard>
-                               </v-col>
-                               <v-col cols="4">
-                                   <MainCard style="height: 100%;" title="Metrics" icon="mdi-speedometer">
-                                       <v-list
-                                               three-line
-                                               style="background-color: #424242"
-                                               dense
-                                       >
-
-                                           <v-list-item v-for="item in metrics" :key="item.name" style="padding-top: 2px; padding-bottom: 2px;">
-                                               <v-list-item-content>
-                                                   <v-list-item-title>
-                                                       {{item.name}}:
-                                                       <v-chip small>
-                                                           <strong>{{item.value}}</strong>
-                                                       </v-chip>
-                                                   </v-list-item-title>
-                                                   <v-list-item-subtitle>{{item.descritption}}</v-list-item-subtitle>
-                                               </v-list-item-content>
-                                           </v-list-item>
-                                       </v-list>
-                                   </MainCard>
-                               </v-col>
-                               </v-row>
-                       </v-container>
-                    </MainCard>
-                </v-col>
-            </v-row>
-            <v-row dense>
-                <v-col cols="12">
                     <MainCard title="Test Performances" icon="mdi-history">
                         <v-container fluid>
+                            <v-row align="center" style="padding-left: 25px;">
+                                <v-col cols="1" align="center" justify="center">
+                                    <v-icon color="#BDBDBD" x-large>mdi-information-outline</v-icon>
+                                </v-col>
+                                <v-col cols="8">
+                                    <v-card-subtitle>
+                                        Test performance are obtained by splitting the training data temporally and evaluating
+                                        model on the test set. The evolution of the performances show how the test
+                                        performance evolved with retrains. You can than see how new data or changes on
+                                        the model impact performance.
+                                   </v-card-subtitle>
+                                </v-col>
+                            </v-row>
                             <v-row align="stretch" justify="center">
                                 <v-col cols="4">
                                     <MainCard title="Performance Evolution" icon="mdi-chart-timeline-variant">

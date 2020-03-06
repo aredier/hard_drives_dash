@@ -1,13 +1,14 @@
+import axios from "axios"
 import Vue from 'vue'
 import Vuex from 'vuex'
 import models from './models'
 
 Vue.use(Vuex);
 
-function choose(choices) {
-  var index = Math.floor(Math.random() * choices.length);
-  return choices[index];
-}
+// function choose(choices) {
+//   var index = Math.floor(Math.random() * choices.length);
+//   return choices[index];
+// }
 
 export default new Vuex.Store({
   state: {
@@ -15,7 +16,10 @@ export default new Vuex.Store({
     hard_drive_statuses: [],
     filters: {
       probaRange: [0, 1],
-      selectedModels: []
+      selectedModels: [],
+      selectFailures: true,
+      selectWarnings: true,
+      selectNominal: true,
     },
     groupedData: [],
     nGroupedPoints: 14,
@@ -55,37 +59,52 @@ export default new Vuex.Store({
     modelLivePerformances: [],
     modelTestPerformances: [],
     notifications: [],
+    backend: process.env.NODE_ENV == 'development'? 'http://127.0.0.1:5000/': 'https://chariots-poc.appspot.com/',
+    groupedDataLoading : false,
+    hard_drive_statuses_loading: false,
+    targetSerialLoading: false,
+    targetSerialStatuses: [],
 
 
   },
   mutations: {
-    loadStatuses(state, n) {
-      var res = [...Array(n)].map(() => {
-        return {
-          serial_number: choose([
-              'Z305B2QN' + Math.floor(Math.random() * 100)
-          ]),
-          model: choose(state.allModels),
-          capacity_bytes: Math.floor(Math.random() * 4000787030016),
-          failure: Math.random() > 0.99? 1 :  0,
-          date: choose(state.dates),
-          failure_probability: Math.pow(Math.random(), 10),
-          }
-      });
+    async loadStatuses(state, n) {
+      state.hard_drive_statuses_loading = true;
+        var res = await axios.post(state.backend + 'api/v1/statuses', {max_records: n}).then(
+            (response) => {
+              return response.data.map((el) => {
+                el['failure_probability'] = Math.pow(Math.random(), 10)
+                return el
+              })
+            }
+        );
       state.hard_drive_statuses = res;
-
+      state.hard_drive_statuses_loading = false;
     },
     setFilters (state, filters) {
       state.filters = filters;
     },
-    fetchGroupedData (state) {
-      let minIndex = state.dates.length - 14;
-      state.groupedData = state.dates.slice(minIndex, state.dates.length).map((item) => {
+    async fetchGroupedData (state) {
+
+      state.groupedDataLoading = true;
+      var raw_res = await axios.post(
+          state.backend + 'api/v1/failures_per_day',
+          {n_days: 14, filters: state.filters}).then(
+          (response) => {
+            return response.data
+            });
+
+      var keys = Object.keys(raw_res).sort((a, b) => {
+              return a.date < b.date? -1: 1
+            }).slice(0, 14);
+      state.groupedData = keys.map(key => {
         return {
-          failures: Math.floor(Math.random() * 50),
-          date: item
+          date: key,
+          failures: raw_res[key]
         }
       });
+      state.groupedDataLoading = false;
+
     },
     resetModelPerformance(state) {
       state.modelLivePerformances = []
@@ -124,45 +143,70 @@ export default new Vuex.Store({
         }
       })
     },
-    updateNotifications (state) {
-      state.notifications = state.hard_drive_statuses.filter((status) =>{
-        return status.failure == 1 || status.failure_probability > 0.5
-      }).map((status) => {
-        if (status.failure == 1) {
-          return {
-            type: 'failure-error',
-            date: status.date,
-            serial: status.serial_number,
-            id: 'f' + status.date + status.serial_number
+    async updateNotifications (state) {
+        let problematicRecords = await axios.post(
+            state.backend + 'api/v1/notifications',
+            {n_days: 30}
+            ).then( (response) => {
+              return response.data.map((el) => {
+                el['failure_probability'] = Math.pow(Math.random(), 10);
+                return el
+              })
+            }
+        );
+        state.notifications = problematicRecords.filter((status) =>{
+          return status.failure == 1 || status.failure_probability > 0.5
+        }).map((status) => {
+          if (status.failure == 1) {
+            return {
+              type: 'failure-error',
+              date: status.date,
+              serial: status.serial_number,
+              id: 'f' + status.date + status.serial_number
+            }
+          } else {
+            return {
+              type: 'prediction-warning',
+              date: status.date,
+              serial: status.serial_number,
+              proba: status.failure_probability,
+              id: 'w' + status.date + status.serial_number
+            }
           }
-        } else {
-          return {
-            type: 'prediction-warning',
-            date: status.date,
-            serial: status.serial_number,
-            proba: status.failure_probability,
-            id: 'w' + status.date + status.serial_number
-          }
-        }
-      })
+        })
     },
     popNotificationIndex (state, indexToPop) {
       state.notifications.splice(indexToPop, 1)
+    },
+    async getTargetSerialStatuses (state, serialNumber) {
+      state.targetSerialLoading = true;
+      var res = await axios.post(
+          state.backend + 'api/v1/serial_statuses', {serial_number: serialNumber}
+          ).then(
+            (response) => {
+              return response.data.map((el) => {
+                el['failure_probability'] = Math.pow(Math.random(), 10)
+                return el
+              })
+            }
+        );
+      state.targetSerialStatuses = res;
+      state.targetSerialLoading = false;
     }
 
 
   },
   actions: {
-    applyFilters (context, filters) {
+    async applyFilters (context, filters) {
       context.commit('setFilters', filters);
-      context.commit('fetchGroupedData');
+      await context.commit('fetchGroupedData');
     },
     updateModelPerformances (context) {
       context.commit('resetModelPerformance');
       context.commit('fetchUpdateModelPerformance');
     },
-    updateStatuses (context) {
-      context.commit('loadStatuses', 1000);
+    async updateStatuses (context) {
+      await context.commit('loadStatuses', 1000);
       context.commit('updateNotifications');
     },
     popNotification (context, notification) {
@@ -171,7 +215,7 @@ export default new Vuex.Store({
       }
       let indexToPop = context.state.notifications.findIndex(sameNotification)
       context.commit('popNotificationIndex', indexToPop)
-    }
+    },
   },
   modules: {
   }

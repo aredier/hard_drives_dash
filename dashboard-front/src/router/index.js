@@ -2,7 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import GeneralStats from '../views/GeneralStats.vue'
 import InDepth from "../views/InDepth";
-import ModelPerformance from '../views/ModelPerformance'
+import LivePerformance from '../views/LivePerformance'
+import TestPerformance from "../views/TestPerformance";
 
 
 Vue.use(VueRouter);
@@ -19,15 +20,19 @@ const routes = [
     component: InDepth
   },
   {
-    path: '/model-performance',
-    name: 'ModelPerformance',
-    component: ModelPerformance
+    path: '/live-performance',
+    name: 'LivePerformance',
+    component: LivePerformance
+  },
+  {
+    path: '/test-performance',
+    name: 'TestPerformance',
+    component: TestPerformance
   }
 ];
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+  mode: 'hash',
   routes
 });
 

@@ -1,5 +1,5 @@
 from chariots import base
-from dask.dataframe import dd
+import dask.dataframe as dd
 
 
 class LoadDask(base.BaseOp):

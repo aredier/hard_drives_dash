@@ -1,4 +1,4 @@
--e git://github.com/aredier/chariots.git#egg=chariots
+chariots
 structlog==20.1.0
 google-cloud-storage==1.26.0
 dask[dataframe]==2.6.0

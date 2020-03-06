@@ -19,3 +19,7 @@ app = Chariots(
         test_pipe
     ], runner=runner, op_store=op_store, worker_pool=worker_pool, import_name='app')
 
+
+if __name__ == '__main__':
+    app.run()
+

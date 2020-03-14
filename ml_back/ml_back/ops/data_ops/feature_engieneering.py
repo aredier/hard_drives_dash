@@ -1,12 +1,14 @@
 import re
 
 import pandas as pd
+import numpy as np
 from chariots import base
 
 
 class ComputeStd(base.BaseOp):
 
     def execute(self, pdf):
+        print(pdf.shape)
         data_cols = [col for col in pdf.columns if re.match('^smart_\d+_normalized$', col)]
         week_std = pdf.groupby('serial_number')[data_cols].rolling(
             window=7, min_periods=1
@@ -18,6 +20,7 @@ class ComputeStd(base.BaseOp):
 class ComputeMean(base.BaseOp):
 
     def execute(self, pdf):
+        print(pdf.shape)
         data_cols = [col for col in pdf.columns if col.startswith('smart')]
 
         week_rolling = pdf.groupby('serial_number')[data_cols].rolling(
@@ -30,6 +33,7 @@ class ComputeMean(base.BaseOp):
 class ComputeVariations(base.BaseOp):
 
     def execute(self, pdf):
+        print(pdf.shape)
         data_cols = [col for col in pdf.columns if col.startswith('smart')]
 
         def compute_variations(x):
@@ -37,6 +41,7 @@ class ComputeVariations(base.BaseOp):
             return pd.DataFrame(values, index=x.index)
 
         variation = pdf.groupby('serial_number')[data_cols].apply(compute_variations)
+        print(variation.shape)
         variation.columns = [col + '_variation' for col in data_cols]
 
         return pd.concat([pdf, variation], axis=1)

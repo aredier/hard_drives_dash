@@ -20,6 +20,14 @@ def server(config_file=None):
     this will open an interactive cookiecutter session with parameters to customize your projects
     """
     app.run()
+    
+@main.command()
+def worker(config_file=None):
+    """
+    creates a new chariot project.
+    this will open an interactive cookiecutter session with parameters to customize your projects
+    """
+    app._worker_pool.spawn_worker()
 
 
 

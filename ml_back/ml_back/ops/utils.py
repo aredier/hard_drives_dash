@@ -17,6 +17,7 @@ class LabelEncoderExt(object):
         :param data_list: A list of string
         :return: self
         """
+        print(len(data_list))
         self.label_encoder = self.label_encoder.fit(list(data_list) + ['Unknown'])
         self.classes_ = self.label_encoder.classes_
 

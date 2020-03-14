@@ -23,7 +23,7 @@ class UnderSampling(base.BaseOp):
         ).sample(frac=1)
 
 
-class LabelEncoderOp(sklearn.KUnsupervisedOp):
+class LabelEncoderOp(sklearn.SKUnsupervisedOp):
     model_class = versioning.VersionedField(LabelEncoderExt, versioning.VersionType.MAJOR)
     training_update_version = versioning.VersionType.MAJOR
 
@@ -66,9 +66,12 @@ class LightGBMClassifier(base.BaseMLOp):
             self.model_parameters,
             train_dataset,
         )
+        print("+++++++++++++++ DONE TRAINING ++++++++++++++++++")
 
     def predict(self, prediction_data):
-        return self._model.predict(prediction_data.drop([self.target_col], axis=1))
+        if self.target_col in prediction_data.columns:
+            prediction_data =  prediction_data.drop([self.target_col], axis=1)
+        return self._model.predict(prediction_data)
 
 
 class Metrics(base.BaseOp):
@@ -81,10 +84,10 @@ class Metrics(base.BaseOp):
             'f1_score_05': metrics.f1_score(y_true, y_pred > 0.5),
             'recall_05': metrics.recall_score(y_true, y_pred > 0.5),
             'precision_05': metrics.precision_score(y_true, y_pred > 0.5),
-            'confusion_05': metrics.confusion_matrix(y_true, y_pred > 0.5),
+            'confusion_05': metrics.confusion_matrix(y_true, y_pred > 0.5).tolist(),
             # other threshold
             'f1_score_005': metrics.f1_score(y_true, y_pred > 0.05),
             'recall_005': metrics.recall_score(y_true, y_pred > 0.05),
             'precision_005': metrics.precision_score(y_true, y_pred > 0.05),
-            'confusion_005': metrics.confusion_matrix(y_true, y_pred > 0.05),
+            'confusion_005': metrics.confusion_matrix(y_true, y_pred > 0.05).tolist(),
         }

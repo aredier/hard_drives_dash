@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: flask
+    tier: frontend
+  name: web-flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+      tier: frontend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: flask
+        tier: frontend
+    spec:
+      containers:
+        - env:
+            - name: GET_HOSTS_FROM
+              value: dns
+          image: chariots-poc/cahriots-app:v1
+          name: web-flask
+          ports:
+            - containerPort: 8080
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: flask
+    tier: frontend
+  name: web-flask
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: flask
+    tier: frontend
+  type: NodePort
+status:
+  loadBalancer: {}

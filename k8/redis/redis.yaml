@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis
+    role: master
+    tier: backend
+  name: redis-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+      tier: backend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: redis
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - image:  antoine/redis-master:v1
+        name: redis-master
+        ports:
+        - containerPort: 6379
+
+status: {}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis
+    role: master
+    tier: backend
+  name: redis-master
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: redis
+    role: master
+    tier: backend
+status:
+  loadBalancer: {}

@@ -22,6 +22,7 @@ class HardDriveStatus(Base):
     serial_number = Column(String)
     model = Column(String)
     date = Column(DateTime)
+    prediction = Column(Float, nullable=True)
     capacity_bytes = Column(BigInteger)
     failure = Column(Integer)
     smart_1_normalized = Column(Float)

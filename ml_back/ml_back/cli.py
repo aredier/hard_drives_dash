@@ -19,7 +19,7 @@ def server(config_file=None):
     creates a new chariot project.
     this will open an interactive cookiecutter session with parameters to customize your projects
     """
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
     
 @main.command()
 def worker(config_file=None):

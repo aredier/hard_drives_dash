@@ -24,8 +24,8 @@ spec:
         tier: backend
     spec:
       containers:
-      - image:  antoine/redis-master:v1
-        name: redis-master
+      - image: eu.gcr.io/chariots-poc/ml_back/redis-db:latest
+        name: redis-db
         ports:
         - containerPort: 6379
 

@@ -27,6 +27,6 @@ spec:
       - env:
         - name: GET_HOSTS_FROM
           value: dns
-        image: chariots-poc/rq-worker:v1
-        name: rq-worker
+        image: eu.gcr.io/chariots-poc/ml_back/cahriots-workers:latest
+        name: cahriots-workers
 status: {}

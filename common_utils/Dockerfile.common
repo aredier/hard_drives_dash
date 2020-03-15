@@ -1,0 +1,10 @@
+FROM python:3.7-buster
+
+ADD ./ opt/common_utils
+
+WORKDIR /opt/
+
+RUN pip install ./common_utils
+
+WORKDIR /usr/src/app/
+

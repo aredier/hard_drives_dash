@@ -1,4 +1,3 @@
-chariots
 structlog==20.1.0
 google-cloud-storage==1.26.0
 dask[dataframe]==2.6.0
@@ -8,3 +7,4 @@ scikit-learn==0.22.1
 lightgbm==2.3.1
 rq==1.2.2
 click==7.0
+redis==3.4.1

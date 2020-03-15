@@ -24,30 +24,30 @@ spec:
         - env:
             - name: GET_HOSTS_FROM
               value: dns
-          image: chariots-poc/cahriots-app:v1
-          name: web-flask
+          image: eu.gcr.io/chariots-poc/ml_back/cahriots-server:latest
+          name: flask
           ports:
-            - containerPort: 8080
+            - containerPort: 5000
 status: {}
 
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  creationTimestamp: null
-  labels:
-    app: flask
-    tier: frontend
-  name: web-flask
-spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 8080
-  selector:
-    app: flask
-    tier: frontend
-  type: NodePort
-status:
-  loadBalancer: {}
+#---
+#
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  creationTimestamp: null
+#  labels:
+#    app: flask
+#    tier: frontend
+#  name: web-flask
+#spec:
+#  ports:
+#  - port: 5000
+#    protocol: TCP
+#    targetPort: 5000
+#  selector:
+#    app: flask
+#    tier: frontend
+#  type: NodePort
+#status:
+#  loadBalancer: {}

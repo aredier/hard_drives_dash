@@ -9,7 +9,7 @@ from .pipelines import create_train_test_datasets, train_pipe, test_pipe, pred_p
 storage_client = storage.Client()
 bucket = storage_client.bucket('op_store')
 runner = runners.SequentialRunner()
-worker_pool = workers.RQWorkerPool(Redis(), queue_kwargs={'default_timeout': 10000})
+worker_pool = workers.RQWorkerPool(Redis('redis-master', port=6379), queue_kwargs={'default_timeout': 10000})
 
 app = Chariots(
     app_pipelines=[

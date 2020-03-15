@@ -21,3 +21,6 @@ dashboard-back/__pycache__/
 
 # front files
 dashboard-front/node_modules
+
+# back data
+*.zip

@@ -36,14 +36,14 @@ _preprocessing_pipe = Pipeline([
 
 train_pipe = Pipeline([
     nodes.Node(ReadParquet(TRAIN_CKPT_PATH), output_nodes=['dask_df']),
-    nodes.Node(ToPandas(), input_nodes=['dask_df'], output_nodes=['pandas_df']),
-    nodes.Node(_preprocessing_pipe, input_nodes=['pandas_df'], output_nodes=['preprocessed_df']),
-    nodes.Node(UnderSampling(under_sampling_frac=.01), input_nodes=['preprocessed_df'], output_nodes=['sampled_df']),
-    nodes.Node(DropSplitCols(), input_nodes=['sampled_df'], output_nodes=['numerical_dataset', 'models']),
-    nodes.Node(LabelEncoderOp(mode=MLMode.FIT_PREDICT), input_nodes=['models'], output_nodes=['models_encoded']),
-    nodes.Node(JoinCols(extract_target=True), input_nodes=['numerical_dataset', 'models_encoded'], output_nodes=['dataset_for_training', 'y_true']),
-    nodes.Node(LightGBMClassifier(mode=MLMode.FIT_PREDICT), input_nodes=['dataset_for_training'], output_nodes=['y_pred']),
-    nodes.Node(Metrics(), input_nodes=['y_true', 'y_pred'], output_nodes=['__pipeline_output__'])
+    nodes.Node(ToPandas(), input_nodes=['dask_df'], output_nodes=['__pipeline_output__']),
+    # nodes.Node(_preprocessing_pipe, input_nodes=['pandas_df'], output_nodes=['preprocessed_df']),
+    # nodes.Node(UnderSampling(under_sampling_frac=.01), input_nodes=['preprocessed_df'], output_nodes=['sampled_df']),
+    # nodes.Node(DropSplitCols(), input_nodes=['sampled_df'], output_nodes=['numerical_dataset', 'models']),
+    # nodes.Node(LabelEncoderOp(mode=MLMode.FIT_PREDICT), input_nodes=['models'], output_nodes=['models_encoded']),
+    # nodes.Node(JoinCols(extract_target=True), input_nodes=['numerical_dataset', 'models_encoded'], output_nodes=['dataset_for_training', 'y_true']),
+    # nodes.Node(LightGBMClassifier(mode=MLMode.FIT_PREDICT), input_nodes=['dataset_for_training'], output_nodes=['y_pred']),
+    # nodes.Node(Metrics(), input_nodes=['y_true', 'y_pred'], output_nodes=['__pipeline_output__'])
 ], name='training', pipeline_callbacks=[TimerLogger()], use_worker=True)
 
 test_pipe = Pipeline([

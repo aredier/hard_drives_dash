@@ -45,6 +45,10 @@ final_response = await_pipeline_execution(response, pipelines.create_train_test_
 if final_response.job_status == workers.JobStatus.failed:
     raise ValueError('pipeline failed')
 
+# sleeping to let workers recover
+time.sleep(60)
+
+
 log.info('training the model')
 response = client.call_pipeline(pipelines.train_pipe)
 final_response = await_pipeline_execution(response, pipelines.train_pipe)
@@ -79,7 +83,10 @@ session = Session()
 session.add(performances)
 session.commit()
 
+# sleeping to let workers recover
+time.sleep(60)
 log.info('testing the model')
+
 response = client.call_pipeline(pipelines.test_pipe)
 final_response = await_pipeline_execution(response, pipelines.test_pipe)
 

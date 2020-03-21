@@ -34,6 +34,4 @@ spec:
                 key: dbname
           - name: DB_HOST
             value: "sql-proxy-service"
-          - name: CHARIOTS_LOCAL
-            value: "false"
       restartPolicy: Never

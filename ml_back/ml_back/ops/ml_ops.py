@@ -47,17 +47,14 @@ class LightGBMerializer(BaseSerializer):
                 return bytes_file.read()
 
     def deserialize_object(self, serialized_object: bytes) -> Any:
-        print('--------------------------- desirializing ---------------------------')
         if serialized_object == "".encode('utf-8'):
-            print('empty serialized')
             return None
         import lightgbm
         with tempfile.TemporaryDirectory() as dir:
             file_path = os.path.join(dir, 'model.txt')
             with open(file_path, 'wb') as bytes_file:
-                return bytes_file.write(serialized_object)
+                bytes_file.write(serialized_object)
             res = lightgbm.Booster(model_file='model.txt')
-            print('model', res)
             return res
 
 

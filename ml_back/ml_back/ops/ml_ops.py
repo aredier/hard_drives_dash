@@ -28,28 +28,28 @@ class LabelEncoderOp(sklearn.SKUnsupervisedOp):
 
 
 class LightGBMClassifier(base.BaseMLOp):
-    model_parameters = versioning.VersionedFieldDict(
-        versioning.VersionType.MINOR,
-        {
-            'is_unbalance': True,
-            'boosting_type': 'gbdt',
-            'learning_rate': 0.001,
-            'max_depth': -1,
-            'n_estimators': 3000,
-            'num_leaves': 25,
-            'subsample': 0.6,  # Subsample ratio of the training instance.
-            'subsample_freq': 0,  # frequence of subsample, <=0 means no enable
-            'colsample_bytree': 0.3,  # Subsample ratio of columns when constructing each tree.
-            'max_bin': 255,  # Number of bucketed bin for feature values'
-        })
-
-    dataset_parameters = versioning.VersionedFieldDict(
-        versioning.VersionType.MINOR,
-        {
-            'categorical_feature': ['model_labeled']
-        })
-
-    target_col = versioning.VersionedField('failure_1d', versioning.VersionType.MAJOR)
+    # model_parameters = versioning.VersionedFieldDict(
+    #     versioning.VersionType.MINOR,
+    #     {
+    #         'is_unbalance': True,
+    #         'boosting_type': 'gbdt',
+    #         'learning_rate': 0.001,
+    #         'max_depth': -1,
+    #         'n_estimators': 3000,
+    #         'num_leaves': 25,
+    #         'subsample': 0.6,  # Subsample ratio of the training instance.
+    #         'subsample_freq': 0,  # frequence of subsample, <=0 means no enable
+    #         'colsample_bytree': 0.3,  # Subsample ratio of columns when constructing each tree.
+    #         'max_bin': 255,  # Number of bucketed bin for feature values'
+    #     })
+    #
+    # dataset_parameters = versioning.VersionedFieldDict(
+    #     versioning.VersionType.MINOR,
+    #     {
+    #         'categorical_feature': ['model_labeled']
+    #     })
+    #
+    # target_col = versioning.VersionedField('failure_1d', versioning.VersionType.MAJOR)
 
     def _init_model(self):
         return None
@@ -68,9 +68,10 @@ class LightGBMClassifier(base.BaseMLOp):
         print("+++++++++++++++ DONE TRAINING ++++++++++++++++++")
 
     def predict(self, prediction_data):
-        if self.target_col in prediction_data.columns:
-            prediction_data = prediction_data.drop([self.target_col], axis=1)
-        return self._model.predict(prediction_data)
+        pass
+        # if self.target_col in prediction_data.columns:
+        #     prediction_data = prediction_data.drop([self.target_col], axis=1)
+        # return self._model.predict(prediction_data)
 
 
 class Metrics(base.BaseOp):

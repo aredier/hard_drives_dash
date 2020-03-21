@@ -35,8 +35,15 @@ _preprocessing_pipe = Pipeline([
 ], name='preprocessing', pipeline_callbacks=[TimerLogger()])
 
 train_pipe = Pipeline([
-    nodes.Node(ReadParquet(TRAIN_CKPT_PATH), output_nodes=['dask_df']),
-    nodes.Node(ToPandas(), input_nodes=['dask_df'], output_nodes=['__pipeline_output__']),
+    nodes.Node(LoadDask(path=DATA_PATH), output_nodes=['dask_df']),
+    nodes.Node(PreprocessDF(), input_nodes=['dask_df'], output_nodes=['preprocessed_df']),
+    nodes.Node(FilterDates(fake_now), input_nodes=['preprocessed_df'], output_nodes=['filtered_df']),
+    nodes.Node(ComputeTarget(), input_nodes=['filtered_df'], output_nodes=['df_with_target']),
+    nodes.Node(TrainTestSplit(max_date=fake_now), input_nodes=['df_with_target'], output_nodes=['train_df', 'test_df']),
+    nodes.Node(SaveDask(TRAIN_CKPT_PATH), input_nodes=['train_df']),
+    nodes.Node(SaveDask(TEST_CKPT_PATH), input_nodes=['test_df']),
+    # nodes.Node(ReadParquet(TRAIN_CKPT_PATH), output_nodes=['__pipeline_output__']),
+    # nodes.Node(ToPandas(), input_nodes=['dask_df'], output_nodes=['__pipeline_output__']),
     # nodes.Node(_preprocessing_pipe, input_nodes=['pandas_df'], output_nodes=['preprocessed_df']),
     # nodes.Node(UnderSampling(under_sampling_frac=.01), input_nodes=['preprocessed_df'], output_nodes=['sampled_df']),
     # nodes.Node(DropSplitCols(), input_nodes=['sampled_df'], output_nodes=['numerical_dataset', 'models']),

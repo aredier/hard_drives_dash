@@ -55,16 +55,16 @@ class LightGBMClassifier(base.BaseMLOp):
         return None
 
     def fit(self, train_data):
-        train_dataset = lightgbm.Dataset(
-            data=train_data.drop([self.target_col], axis=1),
-            label=train_data[self.target_col],
-            **self.dataset_parameters
-        )
-
-        self._model = lightgbm.train(
-            self.model_parameters,
-            train_dataset,
-        )
+        # train_dataset = lightgbm.Dataset(
+        #     data=train_data.drop([self.target_col], axis=1),
+        #     label=train_data[self.target_col],
+        #     **self.dataset_parameters
+        # )
+        #
+        # self._model = lightgbm.train(
+        #     self.model_parameters,
+        #     train_dataset,
+        # )
         print("+++++++++++++++ DONE TRAINING ++++++++++++++++++")
 
     def predict(self, prediction_data):

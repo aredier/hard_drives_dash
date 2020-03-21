@@ -1,5 +1,4 @@
 import pandas as pd
-import lightgbm
 from chariots import base, sklearn, versioning
 from sklearn import metrics
 
@@ -56,6 +55,7 @@ class LightGBMClassifier(base.BaseMLOp):
         return None
 
     def fit(self, train_data):
+        import lightgbm
         train_dataset = lightgbm.Dataset(
             data=train_data.drop([self.target_col], axis=1),
             label=train_data[self.target_col],
@@ -70,7 +70,7 @@ class LightGBMClassifier(base.BaseMLOp):
 
     def predict(self, prediction_data):
         if self.target_col in prediction_data.columns:
-            prediction_data =  prediction_data.drop([self.target_col], axis=1)
+            prediction_data = prediction_data.drop([self.target_col], axis=1)
         return self._model.predict(prediction_data)
 
 

@@ -1,5 +1,4 @@
 <script>
-    import utils from '@/utils';
     import { Line, mixins } from 'vue-chartjs';
     const { reactiveProp } = mixins;
 
@@ -11,65 +10,30 @@
                 default: () => {return []}
             },
         },
-        computed: {
-            formatedData () {
-                return this.inputData.map((item) => {
-                    return {
-                        date: item.date,
-                        roc_score: this.computeRocScore(),
-                        recall: this.computeRecall(item.yTrue, item.yPred),
-                        precision: this.computePrecision(item.yTrue, item.yPred),
-                    }
-                })
-            }
-        },
-        methods: {
-            computeRecall (yTrue, yPred) {
-                let positives = utils.zip(yTrue, yPred).filter((item) => item[0] == 1).map((item) => {
-                    return item[0] == item[1]? 1: 0
-                });
-                if (positives.length == 0) {
-                    return 0
-                }
-                return positives.reduce((a, b) => a + b, 0) / positives.length
-
-            },
-            computePrecision (yTrue, yPred) {
-                let positives = utils.zip(yTrue, yPred).filter((item) => item[1] == 1).map((item) => {
-                    return item[0] == item[1]? 1: 0
-                });
-                if (positives.length == 0) {
-                    return 0
-                }
-                return positives.reduce((a, b) => a + b, 0) / positives.length
-
-            },
-            computeRocScore () {
-                return (Math.random() / 4) + 0.75
-            },
+        methods:{
             render  () {
                 this.renderChart({
-                        labels: this.formatedData.map((item) => {return item.date}),
+                        labels: this.inputData.map((item) => {return item.date}),
                         datasets: [
                             {
                                 label: 'ROC AUC score',
                                 borderColor: '#FF8A65',
                                 backgroundColor: '#FF8A65',
-                                data: this.formatedData.map((item) => {return item.roc_score}),
+                                data: this.inputData.map((item) => {return item.roc_score}),
                                 fill: false,
                             },
                             {
                                 label: 'Recall Score',
                                 borderColor: '#80DEEA',
                                 backgroundColor: '#80DEEA',
-                                data: this.formatedData.map((item) => {return item.recall}),
+                                data: this.inputData.map((item) => {return item.recall}),
                                 fill: false,
                             },
                             {
                                 label: 'precision',
                                 borderColor: '#CE93D8',
                                 backgroundColor: '#CE93D8',
-                                data: this.formatedData.map((item) => {return item.precision}),
+                                data: this.inputData.map((item) => {return item.precision}),
                                 fill: false,
                             },
                         ]

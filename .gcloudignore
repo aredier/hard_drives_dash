@@ -24,3 +24,5 @@ dashboard-front/node_modules
 
 # back data
 *.zip
+
+data/

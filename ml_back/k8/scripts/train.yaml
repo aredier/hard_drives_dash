@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: train
+  labels:
+    app: scripts
+    jobgroup: training
+spec:
+  template:
+    metadata:
+      name: train
+      labels:
+        jobgroup: training
+    spec:
+      containers:
+      - name: training
+        image: eu.gcr.io/chariots-poc/ml_back/chariots-scripts:latest
+        command: ["python3", "scripts/train.py"]
+        env:
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: username
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: password
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: dbname
+          - name: DB_HOST
+            value: "sql-proxy-service"
+          - name: CHARIOTS_LOCAL
+            value: "false"
+      restartPolicy: Never

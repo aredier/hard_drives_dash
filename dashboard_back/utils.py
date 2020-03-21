@@ -1,6 +1,5 @@
 import json
 import os
-import datetime as dt
 
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -32,9 +31,3 @@ Session = sessionmaker(bind=engine)
 def get_session():
     return Session()
 
-
-
-def get_fake_today():
-    if os.environ.get('CHARIOTS_LOCAL') == 'true':
-        return dt.datetime(year=2019, month=1, day=5)
-    return dt.datetime.utcnow() - dt.timedelta(days=200)

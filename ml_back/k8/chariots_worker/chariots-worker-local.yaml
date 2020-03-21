@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis
+    role: worker
+    tier: backend
+  name: rq-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      role: worker
+      tier: backend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: redis
+        role: worker
+        tier: backend
+    spec:
+      containers:
+        - env:
+          - name: GET_HOSTS_FROM
+            value: dns
+          - name: CHARIOTS_LOCAL
+            value: "true"
+          image: eu.gcr.io/chariots-poc/ml_back/cahriots-workers:latest
+          imagePullPolicy: Never
+          name: cahriots-workers
+          volumeMounts:
+            - mountPath: /opt/data
+              name: data-volume
+      volumes:
+        - name: data-volume
+          hostPath:
+            path: /Users/antoineredier/code/hard_drives_dash/data
+            type: Directory
+status: {}

@@ -62,7 +62,7 @@ node_modules
 npm-debug.log*
 dashboard-front/npm-debug.log*
 yarn-debug.log*
-dashboard-front/yarn-debug.log*
+dashboard-front/yasqrn-debug.log*
 yarn-error.log*
 dashboard-front/yarn-error.log*
 
@@ -80,4 +80,9 @@ dashboard-front/yarn-error.log*
 # credentials
 
 credentials.json
+ml_back/k8/sql_proxy/key.json
 
+
+# data
+
+data/

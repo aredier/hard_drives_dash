@@ -25,7 +25,7 @@
                     >
                         <template>
                             <div style="position: relative; height: 340px;">
-                                <ProbaHistory style="position: relative; height: 340px;"></ProbaHistory>
+                                <ProbaHistory :history="predictionHistory" style="position: relative; height: 340px;"></ProbaHistory>
                             </div>
                         </template>
                     </MainCard>
@@ -126,9 +126,11 @@
             notificationTitle() {
                 return this.$route.params.serial + "'s Notifications"
             },
+
             fullDataTitle() {
                 return this.$route.params.serial + "'s Full Data"
             },
+
             fullDataItems() {
                 var res = this.$store.state.targetSerialStatuses.map((item) => {
                     item['capacity_bytes'] = utils.humanFileSize(item['capacity_bytes'])
@@ -137,9 +139,20 @@
 
                 return res
             },
+
+            predictionHistory () {
+                return this.$store.state.targetSerialStatuses.map((el) =>{
+                    return {
+                        failure_probability: el.failure_probability,
+                        date: el.date
+                    }
+                })
+            },
+
             filterdNotifications () {
                 return this.$store.state.notifications.filter((item) => item.serial == this.$route.params.serial)
             },
+
             isEmpty () {
                 return !this.targetSerialLoading && ( this.$route.params.serial == undefined || this.fullDataItems.length == 0)
             }

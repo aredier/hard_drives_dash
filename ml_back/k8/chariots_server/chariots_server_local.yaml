@@ -24,10 +24,21 @@ spec:
         - env:
             - name: GET_HOSTS_FROM
               value: dns
+            - name: CHARIOTS_LOCAL
+              value: "true"
           image: eu.gcr.io/chariots-poc/ml_back/cahriots-server:latest
+          imagePullPolicy: Never
           name: flask
           ports:
             - containerPort: 5000
+          volumeMounts:
+            - mountPath: /opt/data
+              name: data-volume
+      volumes:
+        - name: data-volume
+          hostPath:
+            path: /Users/antoineredier/code/hard_drives_dash/data
+            type: Directory
 status: {}
 
 ---
@@ -51,3 +62,25 @@ spec:
 status:
   loadBalancer: {}
 
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: flask
+    tier: frontend
+  name: local-proxy
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+    nodePort: 30000
+  selector:
+    app: flask
+    tier: frontend
+  type: NodePort
+status:
+  loadBalancer: {}

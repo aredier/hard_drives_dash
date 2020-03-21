@@ -3,7 +3,8 @@
         <v-container fluid>
             <v-row dense>
                 <v-col cols="12">
-                    <MainCard title="Test Performances" icon="mdi-history">
+                    <MainCard title="Test Performances" icon="mdi-history"
+                              :isLoading="$store.state.trainingMetricsLoading">
                         <v-container fluid>
                             <v-row align="center" style="padding-left: 25px;">
                                 <v-col cols="1" align="center" justify="center">
@@ -21,12 +22,12 @@
                             <v-row align="stretch" justify="center">
                                 <v-col cols="4">
                                     <MainCard title="Performance Evolution" icon="mdi-chart-timeline-variant">
-                                        <PerformanceGraph :inputData="testPerformanceData" height="375"></PerformanceGraph>
+                                        <PerformanceGraph :inputData="performanceHistory" height="375"></PerformanceGraph>
                                     </MainCard>
                                 </v-col>
                                 <v-col cols="4">
                                     <MainCard style="height: 100%" title="Confusion Matrix" icon="mdi-table">
-                                        <ConfusionMatrix :confusionMatrix="testConfusionMatrix"></ConfusionMatrix>
+                                        <ConfusionMatrix :confusionMatrix="confusionMatrix"></ConfusionMatrix>
                                     </MainCard>
                                 </v-col>
                                 <v-col cols="4">
@@ -71,49 +72,57 @@
         },
         data () {
             return {
-                metrics: [
-                    {
-                        name: 'accuracy score',
-                        value: '99.9%',
-                        descritption: 'The accuracy score represents the proportions of predictions that where right',
-                    },
-                    {
-                        name: 'precision score',
-                        value: '3.5%',
-                        descritption: 'The precision score is the proportion of predicted failures that did end up failing.',
-                    },
-                    {
-                        name: 'recall score',
-                        value: '20.3%',
-                        descritption: 'The recall score is the proportion of failures that were detected in advances by our model',
-                    },
-                    {
-                        name: 'roc auc score',
-                        value: '0.83',
-                        descritption: 'The roc auc score gives an idea of how well our model performs independantly of the threshold we end up choosing',
-                    },
-                ]
+                threshold: 0.05,
             }
         },
         computed: {
-            livePerformanceData () {
-                return this.$store.state.modelLivePerformances;
+            performanceHistory () {
+                let raw_history = this.$store.state.metrics.training.history
+                return raw_history.sort((a, b) =>{
+                    return a.date > b.date? 1: -1;
+                }).map((el) => {
+                    return {
+                        date: el.date,
+                        roc_score: el.roc_auc,
+                        recall: el.recalls[0.05],
+                        precision: el.precisions[0.005]
+                    }
+                })
             },
             testPerformanceData () {
                 return this.$store.state.modelTestPerformances;
             },
-            liveConfusionMatrix () {
-                return [
-                    [253543, 13095],
-                    [12, 15]
-                ]
+            confusionMatrix () {
+                return this.$store.state.metrics.training.latest.confusion_matrix[0.005]
             },
-            testConfusionMatrix () {
+            metrics () {
                 return [
-                    [253345, 12738],
-                    [7, 25]
-                ]
-            },
+                    {
+                        name: 'roc auc score',
+                        value: this.$store.state.metrics.training.latest.roc_auc,
+                        descritption: 'The roc auc score gives an idea of how well our model performs independantly of the threshold we end up choosing',
+                    },
+                    {
+                        name: 'precision score',
+                        value: this.$store.state.metrics.training.latest.precisions[0.005],
+                        descritption: 'The precision score is the proportion of predicted failures that did end up failing.',
+                    },
+                    {
+                        name: 'recall score',
+                        value: this.$store.state.metrics.training.latest.recalls[0.05],
+                        descritption: 'The recall score is the proportion of failures that were detected in advances by our model',
+                    },
+                    {
+                        name: 'f1 score',
+                        value: this.$store.state.metrics.training.latest.f1_scores[0.05],
+                        descritption: 'The f1 score is the harmonic average of the precision and the recall. This metric measures the performance of the model by taking into account precision and recall at the same level. Hence it is better in cases of unbalanced dataset than accuracy',
+                    },
+            ]
+        }
+        },
+        mounted() {
+            this.$store.dispatch('getAllMetrics');
         }
     }
+
 </script>

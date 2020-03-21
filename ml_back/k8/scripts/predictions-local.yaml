@@ -1,0 +1,39 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: predictions
+  labels:
+    app: scripts
+    jobgroup: training
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: chariots-scripts
+              image: eu.gcr.io/chariots-poc/ml_back/chariots-scripts:latest
+              imagePullPolicy: Never
+              command: ["python3", "scripts/make_predictions.py"]
+              env:
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: cloudsql-db-credentials
+                      key: username
+                - name: DB_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: cloudsql-db-credentials
+                      key: password
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: cloudsql-db-credentials
+                      key: dbname
+                - name: DB_HOST
+                  value: "localhost:5432"
+                - name: CHARIOTS_LOCAL
+                  value: "true"
+          restartPolicy: Never

@@ -7,4 +7,4 @@ psycopg2==2.8.4
 pg8000==1.13.2
 structlog==20.1.0
 gcsfs==0.6.0
-# ./common_utils
+./common_utils

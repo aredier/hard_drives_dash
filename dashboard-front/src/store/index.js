@@ -64,6 +64,12 @@ export default new Vuex.Store({
     hard_drive_statuses_loading: false,
     targetSerialLoading: false,
     targetSerialStatuses: [],
+    liveMetricsLoading: false,
+    trainingMetricsLoading: false,
+    metrics: {
+      live: {},
+      training: {}
+    }
 
 
   },
@@ -73,7 +79,6 @@ export default new Vuex.Store({
         var res = await axios.post(state.backend + 'api/v1/statuses', {max_records: n}).then(
             (response) => {
               return response.data.map((el) => {
-                el['failure_probability'] = Math.pow(Math.random(), 10)
                 return el
               })
             }
@@ -84,6 +89,7 @@ export default new Vuex.Store({
     setFilters (state, filters) {
       state.filters = filters;
     },
+
     async fetchGroupedData (state) {
 
       state.groupedDataLoading = true;
@@ -106,9 +112,11 @@ export default new Vuex.Store({
       state.groupedDataLoading = false;
 
     },
+
     resetModelPerformance(state) {
       state.modelLivePerformances = []
     },
+
     fetchUpdateModelPerformance (state) {
       state.modelLivePerformances = state.dates.slice(-14).map((date) => {
         let baseAccuracy = (Math.random() / 2) + 0.5;
@@ -143,6 +151,7 @@ export default new Vuex.Store({
         }
       })
     },
+
     async updateNotifications (state) {
         let problematicRecords = await axios.post(
             state.backend + 'api/v1/notifications',
@@ -175,23 +184,38 @@ export default new Vuex.Store({
           }
         })
     },
+
     popNotificationIndex (state, indexToPop) {
       state.notifications.splice(indexToPop, 1)
     },
+
     async getTargetSerialStatuses (state, serialNumber) {
       state.targetSerialLoading = true;
       var res = await axios.post(
           state.backend + 'api/v1/serial_statuses', {serial_number: serialNumber}
-          ).then(
-            (response) => {
-              return response.data.map((el) => {
-                el['failure_probability'] = Math.pow(Math.random(), 10)
-                return el
-              })
-            }
-        );
+          ).data
       state.targetSerialStatuses = res;
       state.targetSerialLoading = false;
+    },
+
+    async updateMetrics(state, is_live) {
+      if (is_live) {
+        state.liveMetricsLoading = true;
+      } else {
+        state.trainingMetricsLoading = true;
+      }
+
+      let metrics = await axios.post(
+          state.backend + 'api/v1/metrics',
+          {is_live: is_live, is_test: false}
+      );
+      state.metrics[is_live? 'live': 'training'] = metrics.data;
+      if (is_live) {
+        state.liveMetricsLoading = false;
+      } else {
+        state.trainingMetricsLoading = false;
+      }
+
     }
 
 
@@ -201,14 +225,17 @@ export default new Vuex.Store({
       context.commit('setFilters', filters);
       await context.commit('fetchGroupedData');
     },
+
     updateModelPerformances (context) {
       context.commit('resetModelPerformance');
       context.commit('fetchUpdateModelPerformance');
     },
+
     async updateStatuses (context) {
       await context.commit('loadStatuses', 1000);
       context.commit('updateNotifications');
     },
+
     popNotification (context, notification) {
       function sameNotification (otherNotification) {
         return notification.id == otherNotification.id
@@ -216,6 +243,10 @@ export default new Vuex.Store({
       let indexToPop = context.state.notifications.findIndex(sameNotification)
       context.commit('popNotificationIndex', indexToPop)
     },
+
+    getAllMetrics(context) {
+      context.commit('updateMetrics', false)
+    }
   },
   modules: {
   }

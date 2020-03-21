@@ -109,6 +109,9 @@
                 return bytes.toFixed(1)+' '+units[u];
             }
         },
+        mounted() {
+            this.$store.dispatch('updateStatuses', 1000);
+        }
     }
 
 </script>

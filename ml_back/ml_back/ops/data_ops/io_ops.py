@@ -12,7 +12,7 @@ class LoadDask(base.BaseOp):
         self.path = path
 
     def execute(self):
-        return dd.read_csv(self.path)
+        return dd.read_csv(self.path, assume_missing=True)
 
 
 class SaveDask(base.BaseOp):

@@ -1,6 +1,7 @@
 import pandas as pd
 from chariots import nodes, Pipeline, MLMode
 
+from .utils import IS_LOCAL
 from .callbacks import TimerLogger
 from .ops.data_ops.dataframe_manipulation_ops import PreprocessDF, FilterDates, ComputeTarget, \
     TrainTestSplit, ToPandas, CastDF, JoinCols, DropSplitCols
@@ -8,16 +9,22 @@ from .ops.data_ops.feature_engieneering import ComputeStd, ComputeMean, ComputeV
 from .ops.data_ops.io_ops import LoadDask, SaveDask, ReadParquet, LoadJson, FromNumpy
 from .ops.ml_ops import LightGBMClassifier, Metrics, UnderSampling, LabelEncoderOp
 
-fake_now = pd.to_datetime('2019-01-28')
+fake_now = pd.to_datetime('2019-01-05')
+
+
+DATA_PATH = '/opt/data/hard-drive-data-and-stats/data_Q1_2019/drive_stats_2019_Q1/2019-01-0*.csv' if IS_LOCAL else\
+    'gcs://chariots-data/hard-drive-data-and-stats/data_Q1_2019/drive_stats_2019_Q1/2019-01-0*.csv'
+TRAIN_CKPT_PATH = '/opt/data/ckpt/train.parquet' if IS_LOCAL else 'gcs://chariots-data/ckpt/train.parquet'
+TEST_CKPT_PATH = '/opt/data/ckpt/test.parquet' if IS_LOCAL else 'gcs://chariots-data/ckpt/test.parquet'
 
 create_train_test_datasets = Pipeline([
-    nodes.Node(LoadDask(path='data/all_csv/data_Q1_2019/drive_stats_2019_Q1/2019-01*.csv'), output_nodes=['dask_df']),
+    nodes.Node(LoadDask(path=DATA_PATH), output_nodes=['dask_df']),
     nodes.Node(PreprocessDF(), input_nodes=['dask_df'], output_nodes=['preprocessed_df']),
     nodes.Node(FilterDates(fake_now), input_nodes=['preprocessed_df'], output_nodes=['filtered_df']),
     nodes.Node(ComputeTarget(), input_nodes=['filtered_df'], output_nodes=['df_with_target']),
     nodes.Node(TrainTestSplit(max_date=fake_now), input_nodes=['df_with_target'], output_nodes=['train_df', 'test_df']),
-    nodes.Node(SaveDask('data/ckpt/train.parquet'), input_nodes=['train_df']),
-    nodes.Node(SaveDask('data/ckpt/test.parquet'), input_nodes=['test_df']),
+    nodes.Node(SaveDask(TRAIN_CKPT_PATH), input_nodes=['train_df']),
+    nodes.Node(SaveDask(TEST_CKPT_PATH), input_nodes=['test_df']),
 ], name='create_train_test_datasets', pipeline_callbacks=[TimerLogger()], use_worker=True)
 
 _preprocessing_pipe = Pipeline([
@@ -28,7 +35,7 @@ _preprocessing_pipe = Pipeline([
 ], name='preprocessing', pipeline_callbacks=[TimerLogger()])
 
 train_pipe = Pipeline([
-    nodes.Node(ReadParquet('data/ckpt/train.parquet'), output_nodes=['dask_df']),
+    nodes.Node(ReadParquet(TRAIN_CKPT_PATH), output_nodes=['dask_df']),
     nodes.Node(ToPandas(), input_nodes=['dask_df'], output_nodes=['pandas_df']),
     nodes.Node(_preprocessing_pipe, input_nodes=['pandas_df'], output_nodes=['preprocessed_df']),
     nodes.Node(UnderSampling(under_sampling_frac=.01), input_nodes=['preprocessed_df'], output_nodes=['sampled_df']),
@@ -40,7 +47,7 @@ train_pipe = Pipeline([
 ], name='training', pipeline_callbacks=[TimerLogger()], use_worker=True)
 
 test_pipe = Pipeline([
-    nodes.Node(ReadParquet('data/ckpt/test.parquet'), output_nodes=['dask_df']),
+    nodes.Node(ReadParquet(TEST_CKPT_PATH), output_nodes=['dask_df']),
     nodes.Node(ToPandas(), input_nodes=['dask_df'], output_nodes=['pandas_df']),
     nodes.Node(_preprocessing_pipe, input_nodes=['pandas_df'], output_nodes=['preprocessed_df']),
     nodes.Node(DropSplitCols(), input_nodes=['preprocessed_df'], output_nodes=['numerical_dataset', 'models']),

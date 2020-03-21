@@ -1,11 +1,18 @@
 <script>
-    import { Line } from 'vue-chartjs'
+    import { Line, mixins} from 'vue-chartjs';
+    const {reactiveProp} = mixins;
 
     export default {
         extends: Line,
+        mixins: [reactiveProp],
+        props: {
+            history: {
+                default: () => {return []}
+            }
+        },
         methods: {
             render  () {
-                let startSlice = this.$store.state.dates.length - 15;
+                let startSlice = this.history.length - 15;
                 var selectedDates =this.$store.state.dates.slice(startSlice, this.$store.state.dates.length);
                 this.renderChart({
                         labels: selectedDates,
@@ -13,8 +20,12 @@
                             {
                                 label: 'failure proba estimation',
                                 backgroundColor: '#FF8A65',
-                                data: selectedDates.map(() => {
-                                    return Math.random()
+                                data: this.history.sort((a, b) =>{
+                                    return a.date > b.date? 1: -1;
+                                }).slice(
+                                    startSlice, this.history.length
+                                ).map(el => {
+                                    return el.failure_probability
                                 }),
                                 fontColor: 'white'
                             },

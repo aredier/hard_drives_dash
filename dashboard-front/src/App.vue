@@ -143,7 +143,6 @@
             }
         },
         mounted() {
-            this.$store.dispatch('updateStatuses', 1000);
             this.$store.dispatch('applyFilters', {
                 probaRange: [0, 1],
                 selectedModels: [],

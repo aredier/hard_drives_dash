@@ -7,12 +7,27 @@ from multiprocessing.pool import ThreadPool
 import tqdm
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, BigInteger, Float, DateTime
+from sqlalchemy import Column, Integer, String, BigInteger, Float, DateTime, JSON, BOOLEAN
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
 import numpy as np
 
 Base = declarative_base()
+
+
+class ModelPerformance(Base):
+    __tablename__ = 'model_performance'
+
+    id = Column(Integer, primary_key=True)
+    date = Column(DateTime, index=True)
+    version = Column(JSON, nullable=True)
+    recall = Column(JSON)
+    precision = Column(JSON)
+    f1_score = Column(JSON)
+    roc_auc = Column(Float)
+    confusion_matrix = Column(JSON)
+    is_live_perf = Column(BOOLEAN, index=True)
+    is_training_performance = Column(BOOLEAN)
 
 
 class HardDriveStatus(Base):
@@ -157,6 +172,7 @@ def _upload_record(record, session_cls):
     session.add(db_record)
     session.commit()
 
+
 def upload_csv(all_files_path, engine: Engine):
     Base.metadata.create_all(engine)
 
@@ -174,5 +190,6 @@ def upload_csv(all_files_path, engine: Engine):
             for record in tqdm.tqdm(list_data):
                _upload_record(record, Session)
         else:
-            with ThreadPool(50) as pool:
+            local = os.environ.get('CHARIOTS_LOCAL') == 'true'
+            with ThreadPool(3 if local else 50) as pool:
                 _ = list(tqdm.tqdm(pool.imap(partial(_upload_record, session_cls=Session), list_data), total=len(list_data)))

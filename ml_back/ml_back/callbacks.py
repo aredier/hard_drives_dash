@@ -14,6 +14,7 @@ class TimerLogger(callbacks.PipelineCallback):
 
     def before_node_execution(self, pipeline, node, args):
         self.start_times[node.name] = time.time()
+        log.info('[STARTING] node: {}'.format(node.name))
 
     def after_node_execution(self, pipeline, node, args, output):
         exec_time = time.time() - self.start_times[node.name]

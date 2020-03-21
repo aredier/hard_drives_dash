@@ -20,7 +20,7 @@ db_host = os.environ.get('DB_HOST', '127.0.0.1')
 if IS_LOCAL:
     engine = create_engine('postgresql+pg8000://aredier2@docker.for.mac.localhost:5432/mydb')
 else:
-    engine = create_engine('postgresql+pg8000://{}@{}/{}'.format(db_user_name, db_host, db_name))
+    engine = create_engine('postgresql+pg8000://{}:{}@{}/{}'.format(db_user_name, db_password, db_host, db_name))
 
 
 log = structlog.getLogger('callbacks')

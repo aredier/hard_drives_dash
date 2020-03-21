@@ -54,7 +54,9 @@ class LightGBMerializer(BaseSerializer):
             file_path = os.path.join(dir, 'model.txt')
             with open(file_path, 'wb') as bytes_file:
                 return bytes_file.write(serialized_object)
-            return lightgbm.Booster(model_file='model.txt')
+            res = lightgbm.Booster(model_file='model.txt')
+            print('model', res)
+            return res
 
 
 class LightGBMClassifier(base.BaseMLOp):

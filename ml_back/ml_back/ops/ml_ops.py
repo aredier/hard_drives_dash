@@ -54,7 +54,7 @@ class LightGBMerializer(BaseSerializer):
             file_path = os.path.join(dir, 'model.txt')
             with open(file_path, 'wb') as bytes_file:
                 bytes_file.write(serialized_object)
-            res = lightgbm.Booster(model_file='model.txt')
+            res = lightgbm.Booster(model_file=file_path)
             return res
 
 

@@ -1,5 +1,11 @@
+import io
+import os
+import tempfile
+from typing import Any
+
 import pandas as pd
 from chariots import base, sklearn, versioning
+from chariots.base import BaseSerializer
 from sklearn import metrics
 
 from .utils import LabelEncoderExt
@@ -25,6 +31,26 @@ class UnderSampling(base.BaseOp):
 class LabelEncoderOp(sklearn.SKUnsupervisedOp):
     model_class = versioning.VersionedField(LabelEncoderExt, versioning.VersionType.MAJOR)
     training_update_version = versioning.VersionType.MAJOR
+
+class LightGBMerializer(BaseSerializer):
+    """
+    serializes objects using the dill library (similar to pickle but optimized for numpy arrays.
+    """
+
+    def serialize_object(self, target: Any) -> bytes:
+        with tempfile.tempdir() as dir:
+            file_path = os.path.join(dir, 'model.txt')
+            target.save_model(file_path)
+            with open(file_path, 'rb') as bytes_file:
+                return bytes_file.read()
+
+    def deserialize_object(self, serialized_object: bytes) -> Any:
+        import lightgbm
+        with tempfile.tempdir() as dir:
+            file_path = os.path.join(dir, 'model.txt')
+            with open(file_path, 'wb') as bytes_file:
+                return bytes_file.write(serialized_object)
+            return lightgbm.Booster(model_file='model.txt')
 
 
 class LightGBMClassifier(base.BaseMLOp):

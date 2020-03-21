@@ -43,7 +43,7 @@ train_pipe = Pipeline([
     nodes.Node(LabelEncoderOp(mode=MLMode.FIT_PREDICT), input_nodes=['models'], output_nodes=['models_encoded']),
     nodes.Node(JoinCols(extract_target=True), input_nodes=['numerical_dataset', 'models_encoded'], output_nodes=['dataset_for_training', 'y_true']),
     nodes.Node(LightGBMClassifier(mode=MLMode.FIT_PREDICT), input_nodes=['dataset_for_training'], output_nodes=['y_pred']),
-    nodes.Node(Metrics(), input_nodes=['y_true', 'dataset_for_training'], output_nodes=['__pipeline_output__'])
+    nodes.Node(Metrics(), input_nodes=['y_true', 'y_pred'], output_nodes=['__pipeline_output__'])
 ], name='training', pipeline_callbacks=[TimerLogger()], use_worker=True)
 
 test_pipe = Pipeline([

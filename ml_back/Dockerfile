@@ -5,7 +5,7 @@ COPY ./requirements.txt /opt/requirements.txt
 WORKDIR /opt/
 
 RUN pip install -r requirements.txt
-RUN pip install -e git://github.com/aredier/chariots.git@e7f6ebc34455c574574d39f6350b83fe4767780f#egg=chariots
+RUN pip install -e git://github.com/aredier/chariots.git@aa875ad1a0afef5519d7e5c58a72ebbffb410045#egg=chariots
 
 
 WORKDIR /usr/src/app/

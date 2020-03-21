@@ -47,7 +47,9 @@ class LightGBMerializer(BaseSerializer):
                 return bytes_file.read()
 
     def deserialize_object(self, serialized_object: bytes) -> Any:
+        print('--------------------------- desirializing ---------------------------')
         if serialized_object == "".encode('utf-8'):
+            print('empty serialized')
             return None
         import lightgbm
         with tempfile.TemporaryDirectory() as dir:

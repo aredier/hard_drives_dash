@@ -38,13 +38,17 @@ class LightGBMerializer(BaseSerializer):
     """
 
     def serialize_object(self, target: Any) -> bytes:
-        with tempfile.tempdir() as dir:
+        with tempfile.TemporaryDirectory() as dir:
+            if target is None:
+                return "".encode('utf-8')
             file_path = os.path.join(dir, 'model.txt')
             target.save_model(file_path)
             with open(file_path, 'rb') as bytes_file:
                 return bytes_file.read()
 
     def deserialize_object(self, serialized_object: bytes) -> Any:
+        if serialized_object == "".encode('utf-8'):
+            return None
         import lightgbm
         with tempfile.TemporaryDirectory() as dir:
             file_path = os.path.join(dir, 'model.txt')

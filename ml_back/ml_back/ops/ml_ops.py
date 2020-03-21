@@ -55,7 +55,6 @@ class LightGBMClassifier(base.BaseMLOp):
         return None
 
     def fit(self, train_data):
-        import lightgbm
         train_dataset = lightgbm.Dataset(
             data=train_data.drop([self.target_col], axis=1),
             label=train_data[self.target_col],

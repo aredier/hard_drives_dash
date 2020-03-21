@@ -76,6 +76,7 @@ class LightGBMClassifier(base.BaseMLOp):
         })
 
     target_col = versioning.VersionedField('failure_1d', versioning.VersionType.MAJOR)
+    serializer_cls = LightGBMerializer
 
     def _init_model(self):
         return None
@@ -99,6 +100,10 @@ class LightGBMClassifier(base.BaseMLOp):
         if self.target_col in prediction_data.columns:
             prediction_data = prediction_data.drop([self.target_col], axis=1)
         return self._model.predict(prediction_data)
+
+    def __getstate__(self):
+        self._model = None
+        return self.__dict__
 
 
 class Metrics(base.BaseOp):

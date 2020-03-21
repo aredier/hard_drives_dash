@@ -46,7 +46,7 @@ class LightGBMerializer(BaseSerializer):
 
     def deserialize_object(self, serialized_object: bytes) -> Any:
         import lightgbm
-        with tempfile.tempdir() as dir:
+        with tempfile.TemporaryDirectory() as dir:
             file_path = os.path.join(dir, 'model.txt')
             with open(file_path, 'wb') as bytes_file:
                 return bytes_file.write(serialized_object)
